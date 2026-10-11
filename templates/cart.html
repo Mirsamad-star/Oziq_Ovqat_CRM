@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savat — OziqMarket</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8faf9;color:#0f172a}
+.container{width:min(900px,92%);margin:0 auto;padding:30px 0}
+.nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 0;margin-bottom:24px}
+.nav-inner{width:min(900px,92%);margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:1.3rem;color:#16a34a;text-decoration:none}
+.logo span{color:#0f172a}
+h1{font-size:1.8rem;margin-bottom:20px}
+.item{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid #e2e8f0;flex-wrap:wrap}
+.item-info h3{font-size:1.05rem}
+.item-info p{color:#64748b;font-size:.9rem}
+.qty{display:flex;align-items:center;gap:8px}
+.qty button{width:32px;height:32px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;font-weight:700}
+.summary{background:#fff;border-radius:18px;padding:24px;border:1px solid #e2e8f0;margin-top:24px}
+.summary-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:.95rem}
+.summary-row.total{font-size:1.2rem;font-weight:800;color:#16a34a;border-top:1px solid #e2e8f0;padding-top:12px;margin-top:12px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;font-size:.9rem}
+.form-group input,.form-group textarea{width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:12px;font:inherit;outline:none}
+.form-group input:focus,.form-group textarea:focus{border-color:#16a34a}
+.btn{background:#16a34a;color:#fff;border:none;padding:14px 28px;border-radius:12px;font-weight:700;cursor:pointer;font-size:1rem;width:100%;margin-top:8px}
+.btn:hover{background:#15803d}
+.empty{text-align:center;padding:60px;color:#64748b}
+.discount{background:#fef3c7;color:#92400e;padding:10px 14px;border-radius:10px;font-weight:600;margin-bottom:12px;font-size:.9rem}
+.msg{padding:12px;border-radius:10px;margin-bottom:12px}
+.msg.error{background:#fef2f2;color:#dc2626}
+.msg.success{background:#f0fdf4;color:#15803d}
+</style>
+</head>
+<body>
+<div class="nav"><div class="nav-inner"><a href="/" class="logo">Oziq<span>Market</span></a><a href="/menu/" style="color:#16a34a;font-weight:600">← Menyuga</a></div></div>
+<div class="container">
+  <h1>🛒 Savat</h1>
+  {% if messages %}{% for m in messages %}<div class="msg {% if 'error' in m.tags %}error{% else %}success{% endif %}">{{ m }}</div>{% endfor %}{% endif %}
+  {% if items %}
+  {% for item in items %}
+  <div class="item" data-id="{{ item.id }}">
+    <div class="item-info">
+      <h3>{{ item.product.name }}</h3>
+      <p>{{ item.product.final_price }} so‘m / {{ item.product.unit }}</p>
+    </div>
+    <div class="qty">
+      <button onclick="upd({{ item.id }},{{ item.quantity|add:'-1' }})">−</button>
+      <strong>{{ item.quantity }}</strong>
+      <button onclick="upd({{ item.id }},{{ item.quantity|add:'1' }})">+</button>
+    </div>
+    <div style="font-weight:700">{{ item.subtotal }} so‘m</div>
+    <button onclick="rm({{ item.id }})" style="border:none;background:#fef2f2;color:#dc2626;padding:8px 12px;border-radius:8px;cursor:pointer">O‘chirish</button>
+  </div>
+  {% endfor %}
+  <div class="summary">
+    {% if discount and discount.discount_percent > 0 %}
+    <div class="discount">🎉 Chegirma: {{ discount.discount_percent }}% ({{ discount.code }})</div>
+    {% endif %}
+    <div class="summary-row"><span>Jami</span><span>{{ subtotal }} so‘m</span></div>
+    {% if discount_amount %}<div class="summary-row"><span>Chegirma</span><span>−{{ discount_amount }} so‘m</span></div>{% endif %}
+    <div class="summary-row total"><span>To‘lov</span><span>{{ total }} so‘m</span></div>
+    <form method="post" action="{% url 'order_create' %}" style="margin-top:20px">
+      {% csrf_token %}
+      <div class="form-group"><label>Ism familiya *</label><input name="full_name" required value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"></div>
+      <div class="form-group"><label>Telefon *</label><input name="phone" required placeholder="+998 90 123 45 67"></div>
+      <div class="form-group"><label>Manzil *</label><textarea name="address" rows="2" required placeholder="Shahar, ko‘cha, uy"></textarea></div>
+      <div class="form-group"><label>Izoh</label><textarea name="note" rows="2" placeholder="Qo‘shimcha izoh (ixtiyoriy)"></textarea></div>
+      <button type="submit" class="btn">Buyurtma berish</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="empty"><div style="font-size:3rem">🛒</div><p>Savat bo‘sh</p><a href="/menu/" style="display:inline-block;margin-top:16px;background:#16a34a;color:#fff;padding:12px 24px;border-radius:12px;text-decoration:none;font-weight:700">Menyuga o‘tish</a></div>
+  {% endif %}
+</div>
+<script>
+function getCookie(n){let c=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return c?c[2]:null}
+const CSRF=getCookie('csrftoken');
+async function upd(id,q){
+  const fd=new FormData();fd.append('quantity',q);
+  await fetch('/cart/update/'+id+'/',{method:'POST',headers:{'X-CSRFToken':CSRF},body:fd});
+  location.reload();
+}
+async function rm(id){
+  await fetch('/cart/remove/'+id+'/',{method:'POST',headers:{'X-CSRFToken':CSRF}});
+  location.reload();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,2827 @@
+```html
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Oziq Ovqat CRM | Admin Panel — Fixed</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #22c55e;
+            --green-dark: #16a34a;
+            --bg: #0b0f0d;
+            --sidebar: #101613;
+            --card: #151c18;
+            --card2: #19221d;
+            --border: rgba(255, 255, 255, .08);
+            --text: #f4f7f5;
+            --muted: #8e9b94;
+            --danger: #ef4444;
+            --orange: #f59e0b;
+            --blue: #3b82f6;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar);
+            border-right: 1px solid var(--border);
+            padding: 22px 16px;
+            z-index: 1000;
+            transition: .3s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 5px 10px 28px;
+        }
+
+        .brand-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, .18);
+        }
+
+        .brand h2 {
+            font-size: 17px;
+        }
+
+        .brand span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .menu-title {
+            color: #65716a;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 14px 12px 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 11px;
+            color: #aab5ae;
+            font-size: 14px;
+            transition: .2s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, .05);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: rgba(34, 197, 94, .12);
+            color: var(--green);
+        }
+
+        .nav-icon {
+            width: 21px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .sidebar-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            border: 1px solid rgba(239, 68, 68, .18);
+            background: rgba(239, 68, 68, .06);
+            color: #f87171;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 75px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            background: rgba(11, 15, 13, .9);
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            backdrop-filter: blur(15px);
+        }
+
+        .topbar-left h1 {
+            font-size: 21px;
+        }
+
+        .topbar-left p {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green), #15803d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .admin-info strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .admin-info span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .content {
+            padding: 28px 30px 50px;
+        }
+
+        /* ================= MESSAGES ================= */
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border);
+            animation: slideDown .3s ease;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, .1);
+            color: #86efac;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, .1);
+            color: #fca5a5;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: .25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(34, 197, 94, .3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+        }
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-title {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-icon {
+            width: 37px;
+            height: 37px;
+            border-radius: 10px;
+            background: rgba(34, 197, 94, .1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        .stat-description {
+            color: #66736b;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        /* ================= SECTION ================= */
+
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title h2 {
+            font-size: 17px;
+        }
+
+        .section-title p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 10px 14px;
+            font-size: 12px;
+            transition: .2s ease;
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: #041108;
+            font-weight: 700;
+        }
+
+        .btn-green:hover {
+            background: #4ade80;
+            transform: translateY(-1px);
+        }
+
+        .btn-dark {
+            background: #202923;
+            color: #dce4df;
+            border: 1px solid var(--border);
+        }
+
+        .btn-dark:hover {
+            background: #28332d;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, .15);
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, .1);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, .15);
+        }
+
+        .btn-small {
+            padding: 7px 9px;
+            font-size: 11px;
+        }
+
+        /* ================= SEARCH ================= */
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 250px;
+            background: #101613;
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 9px;
+            padding: 10px 12px 10px 35px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: rgba(34, 197, 94, .5);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: var(--muted);
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1150px;
+        }
+
+        th {
+            text-align: left;
+            padding: 13px 15px;
+            color: #748078;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            background: #111713;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 15px;
+            border-top: 1px solid var(--border);
+            color: #d7dfda;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: .2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: white;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .price {
+            color: #86efac;
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-flex;
+            padding: 5px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            color: #86efac;
+            background: rgba(34, 197, 94, .1);
+        }
+
+        .status-off {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, .1);
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            display: inline;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            padding: 55px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            opacity: .5;
+            margin-bottom: 10px;
+        }
+
+        /* ================= MANAGEMENT GRID ================= */
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .management-card {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 17px;
+        }
+
+        .management-card h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .management-card>p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .management-count {
+            color: var(--green);
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 13px;
+        }
+
+        /* ================= CUSTOMER ================= */
+
+        .customer-table table {
+            min-width: 800px;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .72);
+            backdrop-filter: blur(7px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 5000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeIn .2s ease;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 760px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #151c18;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .5);
+            animation: modalUp .25s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+        }
+
+        .close-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: #202923;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            color: #aab5ae;
+            font-size: 11px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0d120f;
+            color: white;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 11px 12px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: rgba(34, 197, 94, .5);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: #0d120f;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 11px;
+        }
+
+        .checkbox-row input {
+            accent-color: var(--green);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 9px;
+            padding: 17px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ================= MINI LIST ================= */
+
+        .mini-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .mini-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #101613;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .mini-item span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        .mobile-menu {
+            display: none;
+            width: 38px;
+            height: 38px;
+            border: 1px solid var(--border);
+            background: #151c18;
+            color: white;
+            border-radius: 9px;
+        }
+
+        @media (max-width: 1200px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .management-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 20px 15px 40px;
+            }
+
+            .admin-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .management-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">🍽️</div>
+
+            <div>
+                <h2>Oziq Ovqat</h2>
+                <span>CRM Admin Panel</span>
+            </div>
+        </div>
+
+        <div class="menu-title">
+            Boshqaruv
+        </div>
+
+        <a href="#dashboard" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            Dashboard
+        </a>
+
+        <a href="#products" class="nav-item">
+            <span class="nav-icon">🍔</span>
+            Mahsulotlar
+        </a>
+
+        <a href="#categories" class="nav-item">
+            <span class="nav-icon">📂</span>
+            Kategoriyalar
+        </a>
+
+        <a href="#orders" class="nav-item">
+            <span class="nav-icon">🛒</span>
+            Buyurtmalar
+        </a>
+
+        <a href="#customers" class="nav-item">
+            <span class="nav-icon">👥</span>
+            Mijozlar
+        </a>
+
+        <div class="menu-title">
+            Sozlamalar
+        </div>
+
+        <a href="#attributes" class="nav-item">
+            <span class="nav-icon">⚙️</span>
+            Mahsulot sozlamalari
+        </a>
+
+        <div class="sidebar-bottom">
+
+            <form method="POST" action="/accounts/logout/">
+                {% csrf_token %}
+
+                <button class="logout-btn" type="submit">
+                    🚪 Chiqish
+                </button>
+            </form>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <div style="display:flex;align-items:center;gap:10px;">
+
+                    <button class="mobile-menu" id="mobileMenu" type="button">
+                        ☰
+                    </button>
+
+                    <div>
+                        <h1>CRM boshqaruv paneli</h1>
+                        <p>Oziq Ovqat — real database boshqaruvi</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="admin-profile">
+
+                <div class="avatar">
+                    {{ request.user.username|first|upper }}
+                </div>
+
+                <div class="admin-info">
+
+                    <strong>
+                        {{ request.user.username }}
+                    </strong>
+
+                    <span>
+                        {{ request.user.email|default:"Email mavjud emas" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <!-- ================= MESSAGES ================= -->
+
+            {% if messages %}
+
+            <div class="messages">
+
+                {% for message in messages %}
+
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ================= DASHBOARD ================= -->
+
+            <section id="dashboard">
+
+                <div class="stats">
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Jami mahsulotlar
+                            </div>
+
+                            <div class="stat-icon">
+                                🍔
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ products_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Database'dagi barcha mahsulotlar
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Faol mahsulotlar
+                            </div>
+
+                            <div class="stat-icon">
+                                ✅
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ active_products_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Mijozlarga ko‘rinadigan mahsulotlar
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Kategoriyalar
+                            </div>
+
+                            <div class="stat-icon">
+                                📂
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ categories_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Database'dagi kategoriyalar
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Mijozlar
+                            </div>
+
+                            <div class="stat-icon">
+                                👥
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ customers_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Ro‘yxatdan o‘tgan customerlar
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Unitlar
+                            </div>
+
+                            <div class="stat-icon">
+                                📏
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ units_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Real Unit obyektlari
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                O‘lchamlar
+                            </div>
+
+                            <div class="stat-icon">
+                                📐
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ sizes_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Real Size obyektlari
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Ranglar
+                            </div>
+
+                            <div class="stat-icon">
+                                🎨
+                            </div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ colors_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Real Color obyektlari
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-title">
+                                Buyurtmalar
+                            </div>
+
+                            <div class="stat-icon">
+                                🛒
+                            </div>
+                        </div>
+
+                        {% if orders_count is not None %}
+
+                        <div class="stat-number">
+                            {{ orders_count }}
+                        </div>
+
+                        <div class="stat-description">
+                            Database'dagi real buyurtmalar
+                        </div>
+
+                        {% else %}
+
+                        <div class="stat-number">
+                            —
+                        </div>
+
+                        <div class="stat-description">
+                            Order modeli hali ulanmagan
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= PRODUCTS ================= -->
+
+            <section class="section" id="products">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <h2>Mahsulotlar</h2>
+
+                        <p>
+                            Database'dagi real Product obyektlari
+                        </p>
+
+                    </div>
+
+                    <div class="header-actions">
+
+                        <div class="search-box">
+
+                            <span class="search-icon">
+                                🔎
+                            </span>
+
+                            <input type="text" id="productSearch" placeholder="Mahsulot qidirish...">
+
+                        </div>
+
+                        <button class="btn btn-green" type="button" onclick="openCreateModal()">
+                            + Mahsulot qo‘shish
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table id="productsTable">
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Mahsulot</th>
+                                <th>Kategoriya</th>
+                                <th>Narx</th>
+                                <th>Chegirma</th>
+                                <th>Rating</th>
+                                <th>Unit</th>
+                                <th>Size</th>
+                                <th>Color</th>
+                                <th>Min.</th>
+                                <th>Status</th>
+                                <th>Owner</th>
+                                <th>Yaratilgan</th>
+                                <th>Amallar</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for product in products %}
+
+                            <tr data-product-name="{{ product.name|lower }}"
+                                data-product-category="{{ product.category|lower }}">
+
+                                <td>
+                                    #{{ product.id }}
+                                </td>
+
+                                <td>
+                                    <div class="product-name">
+                                        {{ product.name }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ product.category|default:"-" }}
+                                </td>
+
+                                <td class="price">
+                                    {{ product.price|floatformat:0 }} so'm
+                                </td>
+
+                                <td>
+                                    {{ product.sale }}%
+                                </td>
+
+                                <td>
+                                    ⭐ {{ product.rating }}
+                                </td>
+
+                                <td>
+                                    {{ product.unit|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ product.size|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ product.color|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ product.min_count }}
+                                </td>
+
+                                <td>
+
+                                    {% if product.is_active %}
+
+                                    <span class="status status-active">
+                                        Faol
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="status status-off">
+                                        O‘chirilgan
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {{ product.owner.username }}
+                                </td>
+
+                                <td>
+                                    {{ product.created_at|date:"d.m.Y" }}
+                                </td>
+
+                                <td>
+
+                                    <div class="actions">
+
+                                        <!-- KO'RISH -->
+                                        <button type="button" class="btn btn-dark btn-small view-product-btn"
+                                            data-id="{{ product.id }}" data-name="{{ product.name|escape }}"
+                                            data-about="{{ product.about|escape }}" data-price="{{ product.price }}"
+                                            data-category="{{ product.category|escape }}"
+                                            data-rating="{{ product.rating }}" data-sale="{{ product.sale }}"
+                                            data-unit="{{ product.unit|escape }}"
+                                            data-size="{{ product.size|default:''|escape }}"
+                                            data-color="{{ product.color|default:''|escape }}"
+                                            data-min-count="{{ product.min_count }}"
+                                            data-copping-cost="{{ product.copping_cost }}"
+                                            data-men-olgan-narx="{{ product.men_olgan_narx }}">
+                                            Ko‘rish
+                                        </button>
+
+
+                                        <!-- TAHRIRLASH -->
+                                        <button type="button" class="btn btn-warning btn-small edit-product-btn"
+                                            data-id="{{ product.id }}" data-name="{{ product.name|escape }}"
+                                            data-about="{{ product.about|escape }}" data-price="{{ product.price }}"
+                                            data-category="{{ product.category|escape }}"
+                                            data-rating="{{ product.rating }}" data-sale="{{ product.sale }}"
+                                            data-unit="{{ product.unit|escape }}"
+                                            data-size="{{ product.size|default:''|escape }}"
+                                            data-color="{{ product.color|default:''|escape }}"
+                                            data-min-count="{{ product.min_count }}"
+                                            data-copping-cost="{{ product.copping_cost }}"
+                                            data-men-olgan-narx="{{ product.men_olgan_narx }}"
+                                            data-is-active="{{ product.is_active|yesno:'true,false' }}"
+                                            data-edit-url="/adminpanel/products/{{ product.id }}/edit/">
+                                            Tahrirlash
+                                        </button>
+
+
+                                        <!-- FAOLLASHTIRISH / O'CHIRISH -->
+                                        <form method="POST" action="{% url 'product_toggle' product.id %}">
+                                            {% csrf_token %}
+
+                                            <button type="submit" class="btn btn-dark btn-small">
+                                                {% if product.is_active %}
+                                                O‘chirish
+                                                {% else %}
+                                                Faollashtirish
+                                                {% endif %}
+                                            </button>
+                                        </form>
+
+
+                                        <!-- O'CHIRISH -->
+                                        <form method="POST" action="{% url 'product_delete' product.id %}"
+                                            class="delete-product-form" data-product-name="{{ product.name|escape }}">
+                                            {% csrf_token %}
+
+                                            <button type="submit" class="btn btn-danger btn-small">
+                                                O‘chirish
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td colspan="14">
+
+                                    <div class="empty">
+
+                                        <div class="empty-icon">
+                                            🍽️
+                                        </div>
+
+                                        <p>
+                                            Database'da hali mahsulot mavjud emas.
+                                        </p>
+
+                                        <br>
+
+                                        <button class="btn btn-green" onclick="openCreateModal()">
+                                            Birinchi mahsulotni qo‘shish
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= CATEGORIES ================= -->
+
+            <section class="section" id="categories">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <h2>Kategoriyalar</h2>
+
+                        <p>
+                            Real Category obyektlari
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="management-grid" style="padding:20px;">
+
+                    {% for category in categories %}
+
+                    <div class="management-card">
+
+                        <h3>
+                            {{ category.name }}
+                        </h3>
+
+                        <p>
+                            Slug: {{ category.slug }}
+                        </p>
+
+                        <div class="management-count">
+                            {{ category.product_count }}
+                        </div>
+
+                        <small class="muted">
+                            mahsulot
+                        </small>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty" style="grid-column:1/-1;">
+                        Kategoriyalar mavjud emas.
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ATTRIBUTES ================= -->
+
+            <section class="section" id="attributes">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <h2>Mahsulot sozlamalari</h2>
+
+                        <p>
+                            Unit, Size va Color database ma'lumotlari
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="management-grid" style="padding:20px;">
+
+                    <div class="management-card">
+
+                        <h3>📏 Unit</h3>
+
+                        <p>
+                            Mahsulot birliklari
+                        </p>
+
+                        <div class="management-count">
+                            {{ units_count }}
+                        </div>
+
+                        <div class="mini-list">
+
+                            {% for unit in units|slice:":8" %}
+
+                            <div class="mini-item">
+                                <strong>{{ unit.name }}</strong>
+                                <span>Unit</span>
+                            </div>
+
+                            {% empty %}
+
+                            <div class="muted">
+                                Ma'lumot yo‘q
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-card">
+
+                        <h3>📐 Size</h3>
+
+                        <p>
+                            Mahsulot o‘lchamlari
+                        </p>
+
+                        <div class="management-count">
+                            {{ sizes_count }}
+                        </div>
+
+                        <div class="mini-list">
+
+                            {% for size in sizes|slice:":8" %}
+
+                            <div class="mini-item">
+                                <strong>{{ size.name }}</strong>
+                                <span>Size</span>
+                            </div>
+
+                            {% empty %}
+
+                            <div class="muted">
+                                Ma'lumot yo‘q
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-card">
+
+                        <h3>🎨 Color</h3>
+
+                        <p>
+                            Mahsulot ranglari
+                        </p>
+
+                        <div class="management-count">
+                            {{ colors_count }}
+                        </div>
+
+                        <div class="mini-list">
+
+                            {% for color in colors|slice:":8" %}
+
+                            <div class="mini-item">
+                                <strong>{{ color.name }}</strong>
+                                <span>Color</span>
+                            </div>
+
+                            {% empty %}
+
+                            <div class="muted">
+                                Ma'lumot yo‘q
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="management-card">
+
+                        <h3>👤 Owner</h3>
+
+                        <p>
+                            Mahsulot egasi
+                        </p>
+
+                        <div class="management-count">
+                            {{ request.user.username }}
+                        </div>
+
+                        <div class="mini-list">
+
+                            <div class="mini-item">
+                                <strong>{{ request.user.username }}</strong>
+                                <span>Admin</span>
+                            </div>
+
+                            <div class="mini-item">
+                                <strong>{{ request.user.email|default:"-" }}</strong>
+                                <span>Email</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================= ORDERS ================= -->
+
+            <section class="section" id="orders">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <h2>Buyurtmalar</h2>
+
+                        <p>
+                            Real Order modeli ulanganidan keyin shu yerda database buyurtmalari chiqadi.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                {% if orders %}
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Mijoz</th>
+                                <th>Mahsulot</th>
+                                <th>Miqdor</th>
+                                <th>Jami</th>
+                                <th>Status</th>
+                                <th>Sana</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for order in orders %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ order.id }}
+                                </td>
+
+                                <td>
+                                    {{ order.customer }}
+                                </td>
+
+                                <td>
+                                    {{ order.products }}
+                                </td>
+
+                                <td>
+                                    {{ order.quantity }}
+                                </td>
+
+                                <td class="price">
+                                    {{ order.total }}
+                                </td>
+
+                                <td>
+                                    {{ order.status }}
+                                </td>
+
+                                <td>
+                                    {{ order.created_at|date:"d.m.Y H:i" }}
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        🛒
+                    </div>
+
+                    <p>
+                        Hozircha buyurtma ma'lumotlari mavjud emas.
+                    </p>
+
+                    <small class="muted">
+                        Order va OrderItem modellari ulangandan keyin
+                        haqiqiy buyurtmalar shu yerda ko‘rinadi.
+                    </small>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+
+            <!-- ================= CUSTOMERS ================= -->
+
+            <section class="section customer-table" id="customers">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+
+                        <h2>Mijozlar</h2>
+
+                        <p>
+                            Django User database'dan olingan mijozlar
+                        </p>
+
+                    </div>
+
+                    <div class="search-box">
+
+                        <span class="search-icon">
+                            🔎
+                        </span>
+
+                        <input type="text" id="customerSearch" placeholder="Mijoz qidirish...">
+
+                    </div>
+
+                </div>
+
+
+                {% if customers %}
+
+                <div class="table-wrap">
+
+                    <table id="customersTable">
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Ism</th>
+                                <th>Familiya</th>
+                                <th>Email</th>
+                                <th>Ro‘yxatdan o‘tgan</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for customer in customers %}
+
+                            <tr>
+
+                                <td>
+                                    #{{ customer.id }}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ customer.username }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {{ customer.first_name|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ customer.last_name|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ customer.email|default:"-" }}
+                                </td>
+
+                                <td>
+                                    {{ customer.date_joined|date:"d.m.Y" }}
+                                </td>
+
+                                <td>
+
+                                    {% if customer.is_active %}
+
+                                    <span class="status status-active">
+                                        Faol
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="status status-off">
+                                        Faol emas
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        👥
+                    </div>
+
+                    <p>
+                        Customer ma'lumotlari mavjud emas.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= CREATE PRODUCT MODAL ================= -->
+
+    <div class="modal-overlay" id="createModal">
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <h2>
+                    Yangi mahsulot
+                </h2>
+
+                <button type="button" class="close-btn" onclick="closeModal('createModal')">
+                    ×
+                </button>
+
+            </div>
+
+
+            <form method="POST" action="{% url 'adminpanel' %}">
+
+                {% csrf_token %}
+
+                <div class="modal-body">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Mahsulot nomi *
+                            </label>
+
+                            <input class="form-control" name="name" required placeholder="Masalan: Burger">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Narxi *
+                            </label>
+
+                            <input class="form-control" type="number" name="price" min="0" required placeholder="45000">
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Ma'lumot
+                            </label>
+
+                            <textarea class="form-control" name="about"
+                                placeholder="Mahsulot haqida ma'lumot..."></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Kategoriya
+                            </label>
+
+                            <select class="form-control" name="category">
+
+                                <option value="">
+                                    Tanlang
+                                </option>
+
+                                {% for category in categories %}
+
+                                <option value="{{ category.name }}">
+                                    {{ category.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Reyting
+                            </label>
+
+                            <input class="form-control" type="number" name="rating" min="0" max="5" value="5">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Chegirma %
+                            </label>
+
+                            <input class="form-control" type="number" name="sale" min="0" max="100" value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Copping cost
+                            </label>
+
+                            <input class="form-control" type="number" name="copping_cost" min="0" value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Minimum count
+                            </label>
+
+                            <input class="form-control" type="number" name="min_count" min="1" value="1">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Men olgan narx
+                            </label>
+
+                            <input class="form-control" type="number" name="men_olgan_narx" min="0" value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Unit
+                            </label>
+
+                            <select class="form-control" name="unit">
+
+                                {% for unit in units %}
+
+                                <option value="{{ unit.name }}">
+                                    {{ unit.name }}
+                                </option>
+
+                                {% empty %}
+
+                                <option value="dona">
+                                    dona
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Size
+                            </label>
+
+                            <select class="form-control" name="size">
+
+                                <option value="">
+                                    Tanlanmagan
+                                </option>
+
+                                {% for size in sizes %}
+
+                                <option value="{{ size.name }}">
+                                    {{ size.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Color
+                            </label>
+
+                            <select class="form-control" name="color">
+
+                                <option value="">
+                                    Tanlanmagan
+                                </option>
+
+                                {% for color in colors %}
+
+                                <option value="{{ color.name }}">
+                                    {{ color.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Holati
+                            </label>
+
+                            <div class="checkbox-row">
+
+                                <input type="checkbox" name="is_active" id="createActive" checked>
+
+                                <label for="createActive">
+                                    Mahsulot faol
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-dark" onclick="closeModal('createModal')">
+                        Bekor qilish
+                    </button>
+
+                    <button type="submit" class="btn btn-green">
+                        Mahsulotni saqlash
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= EDIT PRODUCT MODAL ================= -->
+
+    <div class="modal-overlay" id="editModal">
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <h2>
+                    Mahsulotni tahrirlash
+                </h2>
+
+                <button type="button" class="close-btn" onclick="closeModal('editModal')">
+                    ×
+                </button>
+
+            </div>
+
+
+            <form method="POST" id="editProductForm">
+
+                {% csrf_token %}
+
+                <div class="modal-body">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Mahsulot nomi
+                            </label>
+
+                            <input class="form-control" id="editName" name="name" required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Narxi
+                            </label>
+
+                            <input class="form-control" id="editPrice" type="number" name="price" min="0" required>
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Ma'lumot
+                            </label>
+
+                            <textarea class="form-control" id="editAbout" name="about"></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Kategoriya
+                            </label>
+
+                            <select class="form-control" id="editCategory" name="category">
+
+                                {% for category in categories %}
+
+                                <option value="{{ category.name }}">
+                                    {{ category.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Reyting
+                            </label>
+
+                            <input class="form-control" id="editRating" type="number" name="rating" min="0" max="5">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Chegirma %
+                            </label>
+
+                            <input class="form-control" id="editSale" type="number" name="sale" min="0" max="100">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Copping cost
+                            </label>
+
+                            <input class="form-control" id="editCoppingCost" type="number" name="copping_cost" min="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Minimum count
+                            </label>
+
+                            <input class="form-control" id="editMinCount" type="number" name="min_count" min="1">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Men olgan narx
+                            </label>
+
+                            <input class="form-control" id="editMenOlganNarx" type="number" name="men_olgan_narx"
+                                min="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Unit
+                            </label>
+
+                            <select class="form-control" id="editUnit" name="unit">
+
+                                {% for unit in units %}
+
+                                <option value="{{ unit.name }}">
+                                    {{ unit.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Size
+                            </label>
+
+                            <select class="form-control" id="editSize" name="size">
+
+                                <option value="">
+                                    Tanlanmagan
+                                </option>
+
+                                {% for size in sizes %}
+
+                                <option value="{{ size.name }}">
+                                    {{ size.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Color
+                            </label>
+
+                            <select class="form-control" id="editColor" name="color">
+
+                                <option value="">
+                                    Tanlanmagan
+                                </option>
+
+                                {% for color in colors %}
+
+                                <option value="{{ color.name }}">
+                                    {{ color.name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Holati
+                            </label>
+
+                            <div class="checkbox-row">
+
+                                <input type="checkbox" name="is_active" id="editActive">
+
+                                <label for="editActive">
+                                    Mahsulot faol
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-dark" onclick="closeModal('editModal')">
+                        Bekor qilish
+                    </button>
+
+                    <button type="submit" class="btn btn-green">
+                        O‘zgarishlarni saqlash
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= VIEW PRODUCT MODAL ================= -->
+
+    <div class="modal-overlay" id="viewModal">
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <h2>
+                    Mahsulot ma'lumotlari
+                </h2>
+
+                <button type="button" class="close-btn" onclick="closeModal('viewModal')">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="mini-list">
+
+                    <div class="mini-item">
+                        <strong>ID</strong>
+                        <span id="viewId"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Mahsulot</strong>
+                        <span id="viewName"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Narx</strong>
+                        <span id="viewPrice"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Kategoriya</strong>
+                        <span id="viewCategory"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Rating</strong>
+                        <span id="viewRating"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Chegirma</strong>
+                        <span id="viewSale"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Unit</strong>
+                        <span id="viewUnit"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Size</strong>
+                        <span id="viewSize"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Color</strong>
+                        <span id="viewColor"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Minimum count</strong>
+                        <span id="viewMinCount"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Copping cost</strong>
+                        <span id="viewCopping"></span>
+                    </div>
+
+                    <div class="mini-item">
+                        <strong>Men olgan narx</strong>
+                        <span id="viewMenOlgan"></span>
+                    </div>
+
+                </div>
+
+
+                <div style="margin-top:18px;">
+
+                    <h3 style="font-size:13px;margin-bottom:8px;">
+                        Ma'lumot
+                    </h3>
+
+                    <div id="viewAbout" style="
+                        color:#9aa69f;
+                        line-height:1.6;
+                        font-size:13px;
+                        background:#0d120f;
+                        border:1px solid var(--border);
+                        border-radius:10px;
+                        padding:14px;
+                    "></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-dark" onclick="closeModal('viewModal')">
+                    Yopish
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        /* ================= MOBILE SIDEBAR ================= */
+
+        const mobileMenu = document.getElementById("mobileMenu");
+        const sidebar = document.getElementById("sidebar");
+
+        if (mobileMenu) {
+            mobileMenu.addEventListener("click", function () {
+                sidebar.classList.toggle("open");
+            });
+        }
+
+
+        /* ================= MODALS ================= */
+
+        function openCreateModal() {
+            document.getElementById("createModal").classList.add("show");
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove("show");
+        }
+
+
+        document.querySelectorAll(".modal-overlay").forEach(function (overlay) {
+
+            overlay.addEventListener("click", function (event) {
+
+                if (event.target === overlay) {
+                    overlay.classList.remove("show");
+                }
+
+            });
+
+        });
+
+
+        document.addEventListener("keydown", function (event) {
+
+            if (event.key === "Escape") {
+
+                document.querySelectorAll(".modal-overlay").forEach(function (modal) {
+                    modal.classList.remove("show");
+                });
+
+            }
+
+        });
+
+
+        /* ================= PRODUCT VIEW ================= */
+
+        function viewProduct(
+            id,
+            name,
+            about,
+            price,
+            category,
+            rating,
+            sale,
+            unit,
+            size,
+            color,
+            minCount,
+            coppingCost,
+            menOlganNarx
+        ) {
+
+            document.getElementById("viewId").textContent = "#" + id;
+            document.getElementById("viewName").textContent = name;
+            document.getElementById("viewAbout").textContent = about || "-";
+            document.getElementById("viewPrice").textContent = price + " so'm";
+            document.getElementById("viewCategory").textContent = category || "-";
+            document.getElementById("viewRating").textContent = rating;
+            document.getElementById("viewSale").textContent = sale + "%";
+            document.getElementById("viewUnit").textContent = unit || "-";
+            document.getElementById("viewSize").textContent = size || "-";
+            document.getElementById("viewColor").textContent = color || "-";
+            document.getElementById("viewMinCount").textContent = minCount;
+            document.getElementById("viewCopping").textContent = coppingCost;
+            document.getElementById("viewMenOlgan").textContent = menOlganNarx;
+
+            document.getElementById("viewModal").classList.add("show");
+        }
+
+
+        /* ================= PRODUCT EDIT ================= */
+
+        function editProduct(
+            id,
+            name,
+            about,
+            price,
+            category,
+            rating,
+            sale,
+            unit,
+            size,
+            color,
+            minCount,
+            coppingCost,
+            menOlganNarx,
+            active
+        ) {
+
+            const form = document.getElementById("editProductForm");
+
+            form.action = "/adminpanel/products/" + id + "/edit/";
+
+            document.getElementById("editName").value = name;
+            document.getElementById("editAbout").value = about;
+            document.getElementById("editPrice").value = price;
+            document.getElementById("editCategory").value = category;
+            document.getElementById("editRating").value = rating;
+            document.getElementById("editSale").value = sale;
+            document.getElementById("editUnit").value = unit;
+            document.getElementById("editSize").value = size;
+            document.getElementById("editColor").value = color;
+            document.getElementById("editMinCount").value = minCount;
+            document.getElementById("editCoppingCost").value = coppingCost;
+            document.getElementById("editMenOlganNarx").value = menOlganNarx;
+            document.getElementById("editActive").checked = active;
+
+            document.getElementById("editModal").classList.add("show");
+        }
+
+
+        /* ================= PRODUCT BUTTONS ================= */
+        document.querySelectorAll(".edit-product-btn").forEach(function (button) {
+            button.addEventListener("click", function () {
+                editProduct(
+                    this.dataset.id,
+                    this.dataset.name || "",
+                    this.dataset.about || "",
+                    this.dataset.price || 0,
+                    this.dataset.category || "",
+                    this.dataset.rating || 5,
+                    this.dataset.sale || 0,
+                    this.dataset.unit || "dona",
+                    this.dataset.size || "",
+                    this.dataset.color || "",
+                    this.dataset.minCount || 1,
+                    this.dataset.coppingCost || 0,
+                    this.dataset.menOlganNarx || 0,
+                    this.dataset.isActive === "true"
+                );
+            });
+        });
+
+        document.querySelectorAll(".view-product-btn").forEach(function (button) {
+            button.addEventListener("click", function () {
+                viewProduct(
+                    this.dataset.id,
+                    this.dataset.name || "",
+                    this.dataset.about || "",
+                    this.dataset.price || 0,
+                    this.dataset.category || "",
+                    this.dataset.rating || 5,
+                    this.dataset.sale || 0,
+                    this.dataset.unit || "dona",
+                    this.dataset.size || "",
+                    this.dataset.color || "",
+                    this.dataset.minCount || 1,
+                    this.dataset.coppingCost || 0,
+                    this.dataset.menOlganNarx || 0
+                );
+            });
+        });
+
+        document.querySelectorAll(".delete-product-form").forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                const name = this.dataset.productName || "mahsulot";
+                if (!confirm('"' + name + '" mahsulotini bazadan butunlay o‘chirasizmi?')) {
+                    event.preventDefault();
+                }
+            });
+        });
+
+        /* ================= FORM VALIDATION ================= */
+
+        document.querySelectorAll("#createModal form, #editProductForm").forEach(function (form) {
+            form.addEventListener("submit", function (event) {
+                const price = form.querySelector('[name="price"]');
+                const rating = form.querySelector('[name="rating"]');
+                const sale = form.querySelector('[name="sale"]');
+                const minCount = form.querySelector('[name="min_count"]');
+
+                if (price && Number(price.value) < 0) {
+                    event.preventDefault();
+                    alert("Narx 0 dan kichik bo‘lishi mumkin emas.");
+                    price.focus();
+                    return;
+                }
+
+                if (rating && (Number(rating.value) < 0 || Number(rating.value) > 5)) {
+                    event.preventDefault();
+                    alert("Reyting 0 dan 5 gacha bo‘lishi kerak.");
+                    rating.focus();
+                    return;
+                }
+
+                if (sale && (Number(sale.value) < 0 || Number(sale.value) > 100)) {
+                    event.preventDefault();
+                    alert("Chegirma 0 dan 100 gacha bo‘lishi kerak.");
+                    sale.focus();
+                    return;
+                }
+
+                if (minCount && Number(minCount.value) < 1) {
+                    event.preventDefault();
+                    alert("Minimum count kamida 1 bo‘lishi kerak.");
+                    minCount.focus();
+                }
+            });
+        });
+
+
+        /* ================= DELETE CONFIRM ================= */
+
+        function confirmDelete(name) {
+            return confirm(
+                '"' + name + '" mahsulotini database-dan butunlay o‘chirishni xohlaysizmi?'
+            );
+        }
+
+
+        /* ================= PRODUCT SEARCH ================= */
+
+        const productSearch = document.getElementById("productSearch");
+
+        if (productSearch) {
+
+            productSearch.addEventListener("input", function () {
+
+                const query = this.value.toLowerCase().trim();
+
+                document
+                    .querySelectorAll("#productsTable tbody tr[data-product-name]")
+                    .forEach(function (row) {
+
+                        const name =
+                            row.dataset.productName || "";
+
+                        const category =
+                            row.dataset.productCategory || "";
+
+                        if (
+                            name.includes(query) ||
+                            category.includes(query)
+                        ) {
+                            row.style.display = "";
+                        } else {
+                            row.style.display = "none";
+                        }
+
+                    });
+
+            });
+
+        }
+
+
+        /* ================= CUSTOMER SEARCH ================= */
+
+        const customerSearch = document.getElementById("customerSearch");
+
+        if (customerSearch) {
+
+            customerSearch.addEventListener("input", function () {
+
+                const query = this.value.toLowerCase().trim();
+
+                document
+                    .querySelectorAll("#customersTable tbody tr")
+                    .forEach(function (row) {
+
+                        const text =
+                            row.innerText.toLowerCase();
+
+                        row.style.display =
+                            text.includes(query)
+                                ? ""
+                                : "none";
+
+                    });
+
+            });
+
+        }
+
+
+        /* ================= SMOOTH NAVIGATION ================= */
+
+        document.querySelectorAll('.nav-item[href^="#"]').forEach(function (item) {
+            item.addEventListener("click", function (event) {
+                const targetId = this.getAttribute("href");
+                const target = document.querySelector(targetId);
+
+                if (target) {
+                    event.preventDefault();
+                    target.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                    history.replaceState(null, "", targetId);
+                }
+            });
+        });
+
+
+        /* ================= ACTIVE NAV ================= */
+
+        document.querySelectorAll(".nav-item").forEach(function (item) {
+
+            item.addEventListener("click", function () {
+
+                document.querySelectorAll(".nav-item")
+                    .forEach(function (nav) {
+                        nav.classList.remove("active");
+                    });
+
+                this.classList.add("active");
+
+                if (window.innerWidth <= 850) {
+                    sidebar.classList.remove("open");
+                }
+
+            });
+
+        });
+
+
+        /* ================= AUTO HIDE MESSAGES ================= */
+
+        setTimeout(function () {
+
+            document.querySelectorAll(".message").forEach(function (message) {
+
+                message.style.opacity = "0";
+
+                setTimeout(function () {
+                    message.remove();
+                }, 300);
+
+            });
+
+        }, 5000);
+
+    </script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil — OziqMarket</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .profile-wrapper {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            color: #16a34a;
+            margin-bottom: 22px;
+        }
+        .logo span { color: #17221b; }
+
+        .profile-card {
+            background: white;
+            padding: 32px;
+            border-radius: 22px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-card h1 {
+            font-size: 26px;
+            color: #17221b;
+            margin-bottom: 6px;
+        }
+
+        .profile-card > p {
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dfe5e1;
+            border-radius: 11px;
+            outline: none;
+            font-size: 15px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+        }
+
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .save-button {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border-radius: 11px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.2s;
+        }
+        .save-button:hover { background: #15803d; }
+
+        .message {
+            padding: 12px;
+            border-radius: 9px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .message.error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .message.success {
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .links a {
+            color: #16a34a;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .links a:hover { text-decoration: underline; }
+
+        @media (max-width: 500px) {
+            .profile-card { padding: 24px 18px; }
+            .logo { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="profile-wrapper">
+    <div class="logo">Oziq<span>Market</span></div>
+
+    <div class="profile-card">
+        <h1>Profil sozlamalari</h1>
+        <p>Username, telefon raqam va o‘zingiz haqingizda ma’lumot kiriting.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'profile' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username *</label>
+                <input type="text" name="username" id="username"
+                       value="{{ user.username }}"
+                       placeholder="Username kiriting" maxlength="150" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefon raqam</label>
+                <input type="tel" name="phone" id="phone"
+                       value="{{ phone }}"
+                       placeholder="+998 90 123 45 67">
+            </div>
+
+            <div class="form-group">
+                <label for="about">About (o‘zingiz haqingizda)</label>
+                <textarea name="about" id="about"
+                          placeholder="Qisqacha o‘zingiz haqingizda yozing...">{{ about }}</textarea>
+            </div>
+
+            <button type="submit" class="save-button">Saqlash</button>
+        </form>
+
+        <div class="links">
+            <a href="{% url 'home' %}">← Bosh sahifa</a>
+            <a href="{% url 'logout' %}">Chiqish</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

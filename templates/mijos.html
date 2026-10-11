@@ -1,0 +1,559 @@
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OziqMarket — Yangi zamonaviy oziq-ovqat do‘koni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#16a34a;--green-dark:#15803d;--green-light:#dcfce7;
+  --bg:#f8faf9;--card:#fff;--text:#0f172a;--muted:#64748b;
+  --border:#e2e8f0;--shadow:0 10px 40px rgba(15,23,42,.08);
+  --radius:18px;--radius-sm:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.container{width:min(1200px,92%);margin:0 auto}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:.3s}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px}
+.logo{font-size:1.5rem;font-weight:800;color:var(--green)}
+.logo span{color:var(--text)}
+.nav-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nav-links a,.nav-btn{padding:8px 14px;border-radius:999px;font-weight:600;font-size:.9rem;transition:.2s;border:none;cursor:pointer;background:transparent}
+.nav-links a:hover,.nav-btn:hover{background:var(--green-light);color:var(--green-dark)}
+.nav-links a.active{background:var(--green);color:#fff}
+.cart-badge{position:relative}
+.cart-badge .count{position:absolute;top:-6px;right:-8px;background:#ef4444;color:#fff;font-size:.7rem;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+.btn-primary{background:var(--green)!important;color:#fff!important;padding:10px 20px!important;border-radius:999px!important;font-weight:700!important;border:none;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--green-dark)!important;transform:translateY(-1px);box-shadow:0 8px 20px rgba(22,163,74,.3)}
+.btn-outline{border:2px solid var(--green);color:var(--green);background:#fff;padding:8px 18px;border-radius:999px;font-weight:700;cursor:pointer;transition:.2s}
+.btn-outline:hover{background:var(--green-light)}
+
+/* HERO */
+.hero{padding:60px 0 40px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-light);color:var(--green-dark);padding:6px 14px;border-radius:999px;font-weight:700;font-size:.85rem;margin-bottom:16px;animation:fadeUp .6s ease}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:16px;animation:fadeUp .7s ease}
+.hero h1 em{font-style:normal;color:var(--green)}
+.hero p{color:var(--muted);font-size:1.1rem;margin-bottom:28px;max-width:480px;animation:fadeUp .8s ease}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;animation:fadeUp .9s ease}
+.hero-card{background:linear-gradient(145deg,#16a34a,#22c55e);border-radius:28px;padding:36px;color:#fff;box-shadow:0 25px 60px rgba(22,163,74,.35);position:relative;overflow:hidden;animation:float 6s ease-in-out infinite}
+.hero-card::before{content:'';position:absolute;width:200px;height:200px;background:rgba(255,255,255,.1);border-radius:50%;top:-40px;right:-40px}
+.hero-card h3{font-size:1.4rem;margin-bottom:8px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+.stat-box{background:rgba(255,255,255,.15);border-radius:14px;padding:14px;text-align:center}
+.stat-box strong{display:block;font-size:1.5rem}
+.stat-box span{font-size:.8rem;opacity:.9}
+
+/* SECTIONS */
+section{padding:50px 0}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.section-head h2{font-size:1.8rem;font-weight:800}
+.section-head p{color:var(--muted)}
+
+/* CATEGORIES */
+.cat-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.cat-chip{flex-shrink:0;padding:12px 20px;background:var(--card);border:1px solid var(--border);border-radius:999px;font-weight:600;cursor:pointer;transition:.25s;display:flex;align-items:center;gap:8px}
+.cat-chip:hover,.cat-chip.active{background:var(--green);color:#fff;border-color:var(--green);transform:translateY(-2px);box-shadow:0 8px 20px rgba(22,163,74,.25)}
+
+/* PRODUCT GRID */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px}
+.product-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:.35s cubic-bezier(.2,.8,.2,1);position:relative;display:flex;flex-direction:column}
+.product-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:transparent}
+.product-img{height:180px;background:linear-gradient(135deg,#ecfdf5,#f0fdf4);display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden}
+.product-img img{width:100%;height:100%;object-fit:cover}
+.sale-badge{position:absolute;top:12px;left:12px;background:#ef4444;color:#fff;font-weight:700;font-size:.75rem;padding:4px 10px;border-radius:999px;z-index:2}
+.like-btn{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 12px rgba(0,0,0,.1);transition:.2s;z-index:2}
+.like-btn:hover,.like-btn.liked{transform:scale(1.1);background:#fef2f2}
+.like-btn.liked{color:#ef4444}
+.product-body{padding:16px 18px 18px;flex:1;display:flex;flex-direction:column}
+.product-cat{font-size:.75rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.product-name{font-weight:700;font-size:1.05rem;margin-bottom:6px}
+.product-about{color:var(--muted);font-size:.85rem;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.product-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:.85rem;color:var(--muted)}
+.stars{color:#f59e0b;letter-spacing:1px}
+.price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:8px}
+.price{font-weight:800;font-size:1.2rem;color:var(--green)}
+.price .old{text-decoration:line-through;color:var(--muted);font-size:.85rem;font-weight:500;margin-left:6px}
+.card-actions{display:flex;gap:8px}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;font-size:1rem}
+.icon-btn:hover{background:var(--green-light);border-color:var(--green)}
+
+/* GAME */
+.game-section{background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:28px;padding:40px;color:#fff;margin:20px 0;position:relative;overflow:hidden}
+.game-section::before{content:'🎰';position:absolute;font-size:8rem;opacity:.08;right:20px;top:10px}
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.doors{display:flex;gap:16px;justify-content:center}
+.door{width:100px;height:130px;background:linear-gradient(180deg,#334155,#1e293b);border:3px solid #475569;border-radius:16px 16px 8px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2rem;transition:.3s;position:relative}
+.door:hover{transform:translateY(-8px);border-color:#22c55e;box-shadow:0 12px 30px rgba(34,197,94,.3)}
+.door.won{background:linear-gradient(180deg,#16a34a,#22c55e);border-color:#86efac;animation:pulse 1s}
+.door.lost{opacity:.4;transform:scale(.95)}
+.door span{font-size:.8rem;margin-top:6px;font-weight:700}
+.game-result{margin-top:20px;padding:16px;border-radius:14px;background:rgba(255,255,255,.08);text-align:center;display:none}
+.game-result.show{display:block;animation:fadeUp .4s}
+.discount-banner{background:linear-gradient(90deg,#fef3c7,#fde68a);color:#92400e;padding:12px 20px;border-radius:14px;font-weight:700;text-align:center;margin-bottom:20px;animation:pulse 2s infinite}
+
+/* FEATURES */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.feature{background:var(--card);border-radius:var(--radius);padding:28px;border:1px solid var(--border);transition:.3s}
+.feature:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.feature-icon{font-size:2.2rem;margin-bottom:12px}
+.feature h3{font-size:1.1rem;margin-bottom:6px}
+.feature p{color:var(--muted);font-size:.9rem}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex;animation:fadeIn .25s}
+.modal{background:#fff;border-radius:24px;width:min(480px,100%);max-height:90vh;overflow-y:auto;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.2);animation:slideUp .35s}
+.modal h3{font-size:1.3rem;margin-bottom:8px}
+.modal .close{float:right;border:none;background:var(--bg);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.1rem}
+.stars-select{display:flex;gap:6px;margin:12px 0;font-size:1.6rem;cursor:pointer}
+.stars-select span{opacity:.3;transition:.15s}
+.stars-select span.on,.stars-select span:hover{opacity:1;color:#f59e0b}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+.form-group input,.form-group textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;font:inherit;outline:none;transition:.2s}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+.review-list{margin-top:16px;max-height:220px;overflow-y:auto}
+.review-item{padding:12px 0;border-bottom:1px solid var(--border)}
+.review-item .r-name{font-weight:700;font-size:.9rem}
+.review-item .r-stars{color:#f59e0b;font-size:.85rem}
+.review-item .r-text{color:var(--muted);font-size:.9rem;margin-top:4px}
+.review-item .r-date{font-size:.75rem;color:#94a3b8}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:14px 22px;border-radius:14px;font-weight:600;z-index:300;transform:translateY(100px);opacity:0;transition:.35s;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}
+.toast.error{background:#dc2626}
+
+/* FOOTER */
+footer{background:#0f172a;color:#cbd5e1;padding:50px 0 30px;margin-top:40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:30px}
+.footer-grid h4{color:#fff;margin-bottom:14px;font-size:1rem}
+.footer-grid a{display:block;color:#94a3b8;margin-bottom:8px;font-size:.9rem;transition:.2s}
+.footer-grid a:hover{color:#fff}
+.footer-bottom{border-top:1px solid #1e293b;padding-top:20px;text-align:center;font-size:.85rem;color:#64748b}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.reveal{opacity:0;transform:translateY(24px);transition:.6s ease}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:900px){
+  .hero-grid,.game-grid,.footer-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero-card{margin-top:20px}
+}
+</style>
+</head>
+<body>
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo">Oziq<span>Market</span> 🥗</a>
+    <div class="nav-links">
+      <a href="/" class="active">Bosh sahifa</a>
+      <a href="/menu/">Menyu</a>
+      <a href="#game">O‘yin</a>
+      <a href="/about/">Biz haqimizda</a>
+      <a href="/contact/">Aloqa</a>
+      {% if user.is_authenticated %}
+        <a href="/adminpanel/">Admin</a>
+        <span style="color:var(--muted);font-size:.85rem">👤 {{ user.username }}</span>
+        <a href="/logout/">Chiqish</a>
+      {% else %}
+        <a href="/login/">Kirish</a>
+        <a href="/register/" class="btn-primary">Ro‘yxat</a>
+      {% endif %}
+      {% if user.is_authenticated %}
+      <a href="/cart/" class="cart-badge btn-outline">🛒 Savat <span class="count" id="cartCount">{{ cart_count|default:0 }}</span></a>
+      {% else %}
+      <a href="/login/?next=/cart/" class="cart-badge btn-outline" title="Avval tizimga kiring">🛒 Savat</a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% if active_discount and active_discount.discount_percent > 0 %}
+<div class="container" style="margin-top:16px">
+  <div class="discount-banner">🎉 Faol chegirma: <strong>{{ active_discount.discount_percent }}%</strong> — Kod: <code>{{ active_discount.code }}</code> (24 soat amal qiladi)</div>
+</div>
+{% endif %}
+
+{% if messages %}
+<div class="container" style="margin-top:12px">
+  {% for message in messages %}
+  <div style="padding:12px 18px;border-radius:12px;margin-bottom:8px;font-weight:600;background:{% if 'error' in message.tags %}#fef2f2;color:#dc2626{% elif 'success' in message.tags %}#f0fdf4;color:#15803d{% else %}#f0f9ff;color:#0369a1{% endif %}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-badge">✨ Yangi zamonaviy oziq-ovqat CRM</div>
+      <h1>Eng yangi <em>mahsulotlar</em> uyga yetkazib beriladi</h1>
+      <p>Minglab mijozlar ishonadi. Tez yetkazish, sifatli mahsulotlar, real like/comment va o‘yin orqali chegirma yuting!</p>
+      <div class="hero-actions">
+        <a href="/menu/" class="btn-primary">🛒 Menyuni ko‘rish</a>
+        <a href="#game" class="btn-outline">🎮 O‘yin o‘ynash</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Bugungi statistika</h3>
+      <p style="opacity:.9;margin-bottom:8px">Real vaqt ma’lumotlari</p>
+      <div class="hero-stats">
+        <div class="stat-box"><strong>{{ total_products|default:0 }}</strong><span>Mahsulot</span></div>
+        <div class="stat-box"><strong>{{ categories|length }}</strong><span>Kategoriya</span></div>
+        <div class="stat-box"><strong>{% if overall_rating %}{{ overall_rating }}★{% else %}5.0★{% endif %}</strong><span>Reyting</span></div>
+        <div class="stat-box"><strong>{{ cart_count|default:0 }}</strong><span>Savatda</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="features reveal">
+      <div class="feature"><div class="feature-icon">🚚</div><h3>Tez yetkazish</h3><p>30–60 daqiqada eshigingizgacha</p></div>
+      <div class="feature"><div class="feature-icon">🥬</div><h3>Yangi mahsulot</h3><p>Har kuni yangilanadigan assortiment</p></div>
+      <div class="feature"><div class="feature-icon">⭐</div><h3>Real baholar</h3><p>Like, yulduz va kommentlar ishlaydi</p></div>
+      <div class="feature"><div class="feature-icon">🎁</div><h3>O‘yin chegirmasi</h3><p>Yuting — 5–20% chegirma oling</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Kategoriyalar</h2><p>Kerakli bo‘limni tanlang</p></div>
+      <a href="/menu/" class="btn-outline">Barchasi →</a>
+    </div>
+    <div class="cat-scroll">
+      <a href="/menu/" class="cat-chip active">🍽️ Barchasi</a>
+      {% for c in categories %}
+      <a href="/menu/?cat={{ c.slug }}" class="cat-chip">{{ c.icon|default:"📦" }} {{ c.name }} ({{ c.product_count }})</a>
+      {% empty %}
+      <a href="/menu/" class="cat-chip">Meva</a>
+      <a href="/menu/" class="cat-chip">Sabzavot</a>
+      <a href="/menu/" class="cat-chip">Sut mahsulotlari</a>
+      <a href="/menu/" class="cat-chip">Go‘sht</a>
+      <a href="/menu/" class="cat-chip">Ichimliklar</a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- PROMO / QIZIQARLI BLOKLAR -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Nima uchun OziqMarket?</h2><p>Mijozlarimiz ishonadigan sabablar</p></div>
+    </div>
+    <div class="features reveal" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
+      <div class="feature" style="text-align:left">
+        <div class="feature-icon">📸</div>
+        <h3>Yangi assortiment</h3>
+        <p>Har kuni yangilanadigan meva, sabzavot, sut mahsulotlari va go‘sht — faqat sifatli tanlov.</p>
+      </div>
+      <div class="feature" style="text-align:left">
+        <div class="feature-icon">🏠</div>
+        <h3>Uyga yetkazish</h3>
+        <p>Buyurtmangiz 30–60 daqiqada eshigingizgacha yetib boradi. Tez va qulay.</p>
+      </div>
+      <div class="feature" style="text-align:left">
+        <div class="feature-icon">💬</div>
+        <h3>Real sharhlar</h3>
+        <p>Mijozlar like, yulduz va komment qoldiradi — shaffof baholar.</p>
+      </div>
+      <div class="feature" style="text-align:left">
+        <div class="feature-icon">🎁</div>
+        <h3>Chegirma o‘yini</h3>
+        <p>Tizimga kiring va o‘ynang — 5–20% chegirma yutish imkoniyati!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALEREYA / RASMLAR -->
+<section>
+  <div class="container">
+    <div class="section-head">
+      <div><h2>Mahsulotlardan namunalar</h2><p>Yangi va sifatli oziq-ovqatlar</p></div>
+      <a href="/menu/" class="btn-outline">To‘liq menyu →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px" class="reveal">
+      <div style="background:linear-gradient(145deg,#ecfdf5,#d1fae5);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🍎</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">Mevalar</h3>
+        <p style="color:var(--muted);font-size:.85rem">Yangi olma, banan, apelsin va boshqalar</p>
+      </div>
+      <div style="background:linear-gradient(145deg,#f0fdf4,#dcfce7);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🥦</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">Sabzavotlar</h3>
+        <p style="color:var(--muted);font-size:.85rem">Pomidor, bodring, kartoshka...</p>
+      </div>
+      <div style="background:linear-gradient(145deg,#eff6ff,#dbeafe);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🥛</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">Sut mahsulotlari</h3>
+        <p style="color:var(--muted);font-size:.85rem">Sut, yogurt, pishloq</p>
+      </div>
+      <div style="background:linear-gradient(145deg,#fef3c7,#fde68a);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🥩</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">Go‘sht</h3>
+        <p style="color:var(--muted);font-size:.85rem">Yangi go‘sht va qush go‘shti</p>
+      </div>
+      <div style="background:linear-gradient(145deg,#fce7f3,#fbcfe8);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🧃</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">Ichimliklar</h3>
+        <p style="color:var(--muted);font-size:.85rem">Sharbat, suv, gazli ichimliklar</p>
+      </div>
+      <div style="background:linear-gradient(145deg,#f5f3ff,#ede9fe);border-radius:20px;padding:32px 20px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:3.5rem;margin-bottom:10px">🛒</div>
+        <h3 style="font-size:1.05rem;margin-bottom:6px">{{ total_products|default:0 }}+ mahsulot</h3>
+        <p style="color:var(--muted);font-size:.85rem">Menyuda barchasini ko‘ring</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="container">
+    <div class="reveal" style="background:linear-gradient(135deg,#16a34a,#22c55e);border-radius:28px;padding:40px 32px;color:#fff;text-align:center">
+      <h2 style="font-size:1.7rem;margin-bottom:10px">Buyurtma berish uchun tizimga kiring</h2>
+      <p style="opacity:.9;margin-bottom:22px;max-width:480px;margin-left:auto;margin-right:auto">Savat, buyurtma va chegirma o‘yini faqat ro‘yxatdan o‘tgan foydalanuvchilar uchun. Birinchi login qiling, keyin ishlatishingiz mumkin.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        {% if user.is_authenticated %}
+          <a href="/menu/" class="btn-primary" style="background:#fff!important;color:#16a34a!important">🛒 Menyuga o‘tish</a>
+          <a href="/cart/" class="btn-outline" style="border-color:#fff;color:#fff">Savat</a>
+        {% else %}
+          <a href="/login/" class="btn-primary" style="background:#fff!important;color:#16a34a!important">🔑 Kirish</a>
+          <a href="/register/" class="btn-outline" style="border-color:#fff;color:#fff">Ro‘yxatdan o‘tish</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game">
+  <div class="container">
+    <div class="game-section reveal">
+      <div class="game-grid">
+        <div>
+          <h2 style="font-size:1.8rem;margin-bottom:10px">🎮 Chegirma o‘yini</h2>
+          <p style="opacity:.85;margin-bottom:16px">3 ta eshikdan birini tanlang. To‘g‘ri topsangiz <strong>5–20%</strong> chegirma yutasiz! Kuniga 5 marta o‘ynashingiz mumkin.</p>
+          <p style="font-size:.9rem;opacity:.7">Yutgan chegirma 24 soat amal qiladi va buyurtmada avtomatik qo‘llanadi.</p>
+          {% if not user.is_authenticated %}
+          <p style="margin-top:14px;background:rgba(255,255,255,.12);padding:12px 16px;border-radius:12px;font-size:.9rem">⚠️ O‘ynash uchun avval <a href="/login/" style="color:#86efac;font-weight:700">tizimga kiring</a> yoki <a href="/register/" style="color:#86efac;font-weight:700">ro‘yxatdan o‘ting</a>.</p>
+          {% endif %}
+        </div>
+        <div>
+          <div class="doors" id="doors">
+            <div class="door" data-n="1" onclick="playGame(1)"><div>🚪</div><span>1</span></div>
+            <div class="door" data-n="2" onclick="playGame(2)"><div>🚪</div><span>2</span></div>
+            <div class="door" data-n="3" onclick="playGame(3)"><div>🚪</div><span>3</span></div>
+          </div>
+          <div class="game-result" id="gameResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="color:#22c55e;margin-bottom:12px">Oziq<span style="color:#fff">Market</span></div>
+        <p style="font-size:.9rem;max-width:280px">Zamonaviy oziq-ovqat CRM — mahsulot, savat, buyurtma, like, sharh va o‘yin chegirmasi bir joyda.</p>
+      </div>
+      <div><h4>Sahifalar</h4><a href="/">Bosh sahifa</a><a href="/menu/">Menyu</a><a href="/cart/">Savat</a><a href="/about/">Biz haqimizda</a></div>
+      <div><h4>Hisob</h4><a href="/login/">Kirish</a><a href="/register/">Ro‘yxat</a><a href="/adminpanel/">Admin</a></div>
+      <div><h4>Aloqa</h4><a href="/contact/">Bog‘lanish</a><a href="tel:+998901234567">+998 90 123 45 67</a><a href="mailto:info@oziqmarket.uz">info@oziqmarket.uz</a></div>
+    </div>
+    <div class="footer-bottom">© 2026 OziqMarket — Barcha huquqlar himoyalangan</div>
+  </div>
+</footer>
+
+<!-- REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="close" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Sharhlar</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:12px" id="modalAvg"></p>
+    <div class="review-list" id="reviewList"></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+    <form id="reviewForm" onsubmit="return submitReview(event)">
+      <input type="hidden" id="reviewProductId">
+      <div class="form-group"><label>Ismingiz</label><input type="text" id="reviewName" required placeholder="Ismingiz" value="{% if user.is_authenticated %}{{ user.username }}{% endif %}"></div>
+      <div class="form-group"><label>Yulduzlar</label>
+        <div class="stars-select" id="starSelect">
+          <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+        </div>
+        <input type="hidden" id="reviewRating" value="5">
+      </div>
+      <div class="form-group"><label>Komment</label><textarea id="reviewComment" rows="3" required placeholder="Fikringizni yozing..."></textarea></div>
+      <button type="submit" class="btn-primary" style="width:100%">Yuborish</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function getCookie(n){let c=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)');return c?c[2]:null}
+const CSRF=getCookie('csrftoken');
+
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+(type||'');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+function updateCartBadge(n){
+  const el=document.getElementById('cartCount');
+  if(el)el.textContent=n;
+}
+
+const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
+
+async function addToCart(id){
+  if(!IS_AUTH){
+    toast('Avval tizimga kiring yoki ro‘yxatdan o‘ting!','error');
+    setTimeout(()=>location.href='/login/?next=/menu/',1200);
+    return;
+  }
+  const fd=new FormData();fd.append('quantity','1');
+  const r=await fetch('/cart/add/'+id+'/',{method:'POST',headers:{'X-CSRFToken':CSRF},body:fd});
+  const d=await r.json();
+  if(d.login_required){toast(d.error||'Avval tizimga kiring!','error');setTimeout(()=>location.href=d.login_url||'/login/',1200);return}
+  if(d.ok){toast(d.message);updateCartBadge(d.cart_count)}
+  else toast(d.error||'Xato','error');
+}
+
+async function toggleLike(id,btn){
+  const r=await fetch('/product/'+id+'/like/',{method:'POST',headers:{'X-CSRFToken':CSRF}});
+  const d=await r.json();
+  if(d.ok){
+    btn.classList.toggle('liked',d.liked);
+    btn.innerHTML=d.liked?'❤️':'🤍';
+    const card=btn.closest('.product-card');
+    const num=card&&card.querySelector('.likes-num');
+    if(num)num.textContent=d.likes;
+    toast(d.liked?'Like qo‘yildi!':'Like olindi');
+  }
+}
+
+let currentProductId=null;
+function openReview(id,name){
+  currentProductId=id;
+  document.getElementById('reviewProductId').value=id;
+  document.getElementById('modalTitle').textContent=name+' — Sharhlar';
+  document.getElementById('reviewModal').classList.add('show');
+  loadReviews(id);
+}
+function closeModal(){document.getElementById('reviewModal').classList.remove('show')}
+
+async function loadReviews(id){
+  const r=await fetch('/product/'+id+'/reviews/');
+  const d=await r.json();
+  document.getElementById('modalAvg').textContent=d.average?`O‘rtacha: ${d.average}★ · ${d.count} ta sharh · ❤️ ${d.likes||0}`:`Hali sharh yo‘q`;
+  const list=document.getElementById('reviewList');
+  list.innerHTML=d.reviews.length?d.reviews.map(rv=>`
+    <div class="review-item">
+      <div class="r-name">${rv.name} <span class="r-stars">${'★'.repeat(rv.rating)}${'☆'.repeat(5-rv.rating)}</span></div>
+      <div class="r-text">${rv.comment}</div>
+      <div class="r-date">${rv.created_at}</div>
+    </div>`).join(''):'<p style="color:#94a3b8;text-align:center;padding:20px">Birinchi sharhni yozing!</p>';
+}
+
+document.querySelectorAll('#starSelect span').forEach(s=>{
+  s.addEventListener('click',()=>{
+    const v=+s.dataset.v;
+    document.getElementById('reviewRating').value=v;
+    document.querySelectorAll('#starSelect span').forEach(x=>x.classList.toggle('on',+x.dataset.v<=v));
+  });
+});
+document.querySelectorAll('#starSelect span').forEach(x=>x.classList.add('on'));
+
+async function submitReview(e){
+  e.preventDefault();
+  const id=document.getElementById('reviewProductId').value;
+  const fd=new FormData();
+  fd.append('name',document.getElementById('reviewName').value);
+  fd.append('rating',document.getElementById('reviewRating').value);
+  fd.append('comment',document.getElementById('reviewComment').value);
+  const r=await fetch('/product/'+id+'/reviews/add/',{method:'POST',headers:{'X-CSRFToken':CSRF},body:fd});
+  const d=await r.json();
+  if(d.ok){toast(d.message);document.getElementById('reviewComment').value='';loadReviews(id)}
+  else toast(d.error||'Xato','error');
+  return false;
+}
+
+let gameBusy=false;
+async function playGame(choice){
+  if(!IS_AUTH){
+    toast('O‘ynash uchun avval tizimga kiring!','error');
+    setTimeout(()=>location.href='/login/?next=/#game',1200);
+    return;
+  }
+  if(gameBusy)return;
+  gameBusy=true;
+  const doors=document.querySelectorAll('.door');
+  doors.forEach(d=>d.style.pointerEvents='none');
+  const fd=new FormData();fd.append('choice',choice);
+  const r=await fetch('/game/play/',{method:'POST',headers:{'X-CSRFToken':CSRF},body:fd});
+  const d=await r.json();
+  const res=document.getElementById('gameResult');
+  if(d.login_required){res.className='game-result show';res.innerHTML='⚠️ '+d.error;toast(d.error,'error');gameBusy=false;doors.forEach(x=>x.style.pointerEvents='');setTimeout(()=>location.href=d.login_url||'/login/',1200);return}
+  if(!d.ok){res.className='game-result show';res.innerHTML='⚠️ '+d.error;gameBusy=false;doors.forEach(x=>x.style.pointerEvents='');return}
+  doors.forEach(door=>{
+    const n=+door.dataset.n;
+    if(n===d.winning_door)door.classList.add('won');
+    else door.classList.add('lost');
+  });
+  res.className='game-result show';
+  if(d.won){
+    res.innerHTML=`🎉 <strong>${d.message}</strong><br><small>Kod savatda avtomatik ishlatiladi</small>`;
+    toast(d.message);
+    setTimeout(()=>location.reload(),2500);
+  }else{
+    res.innerHTML=`😔 ${d.message}`;
+    toast(d.message,'error');
+  }
+  setTimeout(()=>{
+    doors.forEach(x=>{x.classList.remove('won','lost');x.style.pointerEvents=''});
+    gameBusy=false;
+  },3000);
+}
+
+// Reveal on scroll
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+document.getElementById('reviewModal').addEventListener('click',e=>{if(e.target.id==='reviewModal')closeModal()});
+</script>
+</body>
+</html>

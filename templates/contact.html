@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aloqa — OziqMarket</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8faf9;color:#0f172a}
+.container{width:min(560px,92%);margin:0 auto;padding:40px 0}
+.nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 0}
+.nav a{color:#16a34a;font-weight:700;text-decoration:none;margin-left:5%}
+h1{font-size:1.8rem;margin-bottom:20px}
+.form-group{margin-bottom:14px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input,textarea{width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:12px;font:inherit}
+button{width:100%;padding:14px;background:#16a34a;color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:1rem}
+.msg{padding:12px;background:#f0fdf4;color:#15803d;border-radius:10px;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="nav"><a href="/">← OziqMarket</a></div>
+
+<div class="container">
+  <h1>📞 Aloqa</h1>
+  {% if messages %}{% for m in messages %}<div class="msg">{{ m }}</div>{% endfor %}{% endif %}
+  <!-- <form method="post">
+    {% csrf_token %}
+    <div class="form-group"><label>Ism</label><input name="name" required></div>
+    <div class="form-group"><label>Email / Telefon</label><input name="phone" required></div>
+    <div class="form-group"><label>Xabar</label><textarea name="message" rows="4" required></textarea></div>
+    <button type="submit">Yuborish</button>
+  </form> -->
+
+  
+<form method="post" action="{% url 'bot' %}">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label>Ism</label>
+        <input name="name" required>
+    </div>
+
+    <div class="form-group">
+        <label>Email / Telefon</label>
+        <input name="phone" required>
+    </div>
+
+    <div class="form-group">
+        <label>Xabar</label>
+        <textarea name="message" rows="4" required></textarea>
+    </div>
+
+    <button type="submit">Yuborish</button>
+</form>
+
+  <p style="margin-top:24px;color:#64748b">Tel: +998 90 123 45 67<br>Email: info@oziqmarket.uz</p>
+</div>
+</body>
+</html>
